@@ -118,7 +118,7 @@ export const protect = catchAsync(
     if (currentUser.changedPasswordAfter(decoded.iat)) {
       return next(
         new AppError(
-          "პაროლი ახალი შეცვლილია! გთხოვთ გაიაროთ თავიდან გაიაროთ ავტორიზაცია",
+          "პაროლი ახალი შეცვლილია! გთხოვთ თავიდან გაიაროთ ავტორიზაცია",
           401
         )
       );
