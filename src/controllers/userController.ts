@@ -9,7 +9,7 @@ import { deleteOne, getAll, getOne, updateOne } from "./handlerFactory";
 const multerStorage = multer.memoryStorage();
 
 const multerFilter = (
-  req: Request,
+  _req: Request,
   file: Express.Multer.File,
   cb: Function
 ) => {
@@ -29,7 +29,7 @@ const upload = multer({
 export const uploadUserPhoto = upload.single("avatar");
 
 export const resizeUserPhoto = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, _res: Response, next: NextFunction) => {
     if (!req.file) return next();
     req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
 
@@ -43,7 +43,7 @@ export const resizeUserPhoto = catchAsync(
   }
 );
 
-const filterObj = (obj, ...allowedFields) => {
+const filterObj = (obj: Object, ...allowedFields: any[]) => {
   const newObj = {};
   Object.keys(obj).forEach((el) => {
     if (allowedFields.includes(el)) newObj[el] = obj[el];
@@ -88,7 +88,7 @@ export const updateMe = catchAsync(
   }
 );
 export const deleteMe = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     await User.findByIdAndUpdate(req.user.id, { active: false });
 
     res.status(204).json({
@@ -109,6 +109,5 @@ export const getUser = getOne(User);
 
 // Except password
 export const updateUser = updateOne(User);
-
 
 export const deleteUser = deleteOne(User);

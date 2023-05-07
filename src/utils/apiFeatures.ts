@@ -1,8 +1,3 @@
-interface APITypes {
-  query: any;
-  queryString: Record<string, any>;
-}
-
 interface APIFeatures {
   filter(): APIFeatures;
   sort(): APIFeatures;

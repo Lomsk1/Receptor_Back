@@ -9,7 +9,7 @@ import {
 
 export const getAllReceipt = getAll(Receipt);
 export const getReceiptById = getOne(Receipt);
-// export const getReceiptById = getOne(Receipt, { path: "review" });
+// export const getReceiptById = getOne(Receipt, { path: "user" });
 export const createReceipt = createOne(Receipt);
 export const updateReceipt = updateOne(Receipt);
 export const deleteReceipt = deleteOne(Receipt);

@@ -24,7 +24,12 @@ const signToken = (id: number) => {
   });
 };
 
-const createSendToken = (user, statusCode, res: Response, req: Request) => {
+const createSendToken = (
+  user: any,
+  statusCode: number,
+  res: Response,
+  req: Request
+) => {
   const token = signToken(user.id);
 
   res.cookie("jwt", token, {
@@ -49,7 +54,7 @@ const createSendToken = (user, statusCode, res: Response, req: Request) => {
 };
 
 export const signUp = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const newUser = await User.create({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
@@ -88,7 +93,7 @@ export const login = catchAsync(
 );
 
 export const protect = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, _res: Response, next: NextFunction) => {
     // 1) Getting token and check of it's there
     let token: string;
     if (
@@ -130,8 +135,8 @@ export const protect = catchAsync(
   }
 );
 
-export const restrictTo = (...roles) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+export const restrictTo = (...roles:any[]) => {
+  return (req: Request, _res: Response, next: NextFunction) => {
     if (!roles.includes(req.user.role)) {
       return next(
         new AppError("არ გაქვთ წვდომა მოქმედების განსახორციელებლად", 403)

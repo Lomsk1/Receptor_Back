@@ -5,9 +5,6 @@ import { htmlToText } from "html-to-text";
 import pug from "pug";
 dotenv.config();
 
-interface EmailTypes {
-  url: string;
-}
 
 class Email {
   to: string;

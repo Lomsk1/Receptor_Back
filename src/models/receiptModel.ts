@@ -1,4 +1,5 @@
-import mongoose, { Document } from "mongoose";
+import { NextFunction } from "express";
+import mongoose, { Document, Query } from "mongoose";
 
 interface ReceiptTypes {
   name: string;
@@ -20,7 +21,9 @@ interface ReceiptTypes {
     step: number;
     description: string;
   };
+  author: mongoose.Types.ObjectId;
 }
+interface ReceiptDocument extends ReceiptTypes, Document {}
 
 const nutritionSchema = new mongoose.Schema({
   name: {
@@ -78,25 +81,39 @@ const receiptSchema = new mongoose.Schema<ReceiptTypes>(
         description: String,
       },
     ],
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "ავტორის მითითება სავალდებულოა"],
+    },
   },
   {
-    // toJSON: { virtuals: true },
-    // toObject: { virtuals: true },
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
 
-// categorySchema.virtual("projects", {
-//     ref: "Project",
-//     foreignField: "category",
-//     localField: "_id",
-//   });
+// receiptSchema.virtual("user", {
+//   ref: "User",
+//   foreignField: "_id",
+//   localField: "user",
+// });
+receiptSchema.pre(/^find/, function (next: NextFunction) {
+  const query = this as Query<ReceiptDocument[], ReceiptDocument>;
 
-//   categorySchema.pre(/^find/, function (next) {
-//     this.populate({
-//       path: "projects",
-//     });
-//     next();
-//   });
+  query.populate({
+    path: "author",
+    select: "firstName avatar",
+  });
+
+  next();
+});
+
+// receiptSchema.pre("save", async function (next) {
+//   const user = await mongoose.model("User").findById(this.user);
+//   this.author = user.firsName;
+//   next();
+// });
 
 const Receipt = mongoose.model<ReceiptTypes & Document>(
   "Receipt",
