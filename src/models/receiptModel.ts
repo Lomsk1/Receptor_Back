@@ -22,6 +22,7 @@ interface ReceiptTypes {
     description: string;
   };
   author: mongoose.Types.ObjectId;
+  review: any;
 }
 interface ReceiptDocument extends ReceiptTypes, Document {}
 
@@ -86,6 +87,7 @@ const receiptSchema = new mongoose.Schema<ReceiptTypes>(
       ref: "User",
       required: [true, "ავტორის მითითება სავალდებულოა"],
     },
+    // review: { type: mongoose.Schema.Types.ObjectId, ref: "Review" },
   },
   {
     toJSON: { virtuals: true },
@@ -93,11 +95,12 @@ const receiptSchema = new mongoose.Schema<ReceiptTypes>(
   }
 );
 
-// receiptSchema.virtual("user", {
-//   ref: "User",
-//   foreignField: "_id",
-//   localField: "user",
-// });
+receiptSchema.virtual("review", {
+  ref: "Review",
+  foreignField: "receipt",
+  localField: "_id",
+});
+
 receiptSchema.pre(/^find/, function (next: NextFunction) {
   const query = this as Query<ReceiptDocument[], ReceiptDocument>;
 

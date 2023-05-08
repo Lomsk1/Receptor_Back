@@ -10,6 +10,7 @@ import helmet from "helmet";
 import receiptRoute from "./routes/receiptRoutes";
 import userRouter from "./routes/userRoutes";
 import commentRoute from "./routes/commentRoutes";
+import reviewRoute from "./routes/reviewRoute";
 
 dotenv.config();
 
@@ -40,6 +41,8 @@ app.use(mongoSanitize());
 app.use("/api/v1/receipt", receiptRoute);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/comment", commentRoute);
+app.use("/api/v1/review", reviewRoute);
+
 
 app.use(xss());
 

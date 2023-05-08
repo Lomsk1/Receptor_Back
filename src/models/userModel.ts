@@ -22,7 +22,8 @@ export interface UserModel extends Model<UserDoc> {
 }
 
 export interface UserDoc extends Document {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   passwordConfirm: string;
