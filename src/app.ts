@@ -11,6 +11,8 @@ import receiptRoute from "./routes/receiptRoutes";
 import userRouter from "./routes/userRoutes";
 import commentRoute from "./routes/commentRoutes";
 import reviewRoute from "./routes/reviewRoute";
+import ingredientRoute from "./routes/ingredientRoutes";
+import ingredientCategoryRoute from "./routes/ingrCategoryRoutes";
 
 dotenv.config();
 
@@ -42,7 +44,8 @@ app.use("/api/v1/receipt", receiptRoute);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/comment", commentRoute);
 app.use("/api/v1/review", reviewRoute);
-
+app.use("/api/v1/ingredient", ingredientRoute);
+app.use("/api/v1/ingredientCategory", ingredientCategoryRoute);
 
 app.use(xss());
 
