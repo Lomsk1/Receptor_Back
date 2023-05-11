@@ -8,7 +8,13 @@ interface ReceiptTypes {
   cookingTime: string;
   portion: number;
   slug: string;
-  coverImage: string;
+  image: {
+    data: Buffer;
+    contentType: string;
+    name: string;
+    destination: string;
+  };
+  category: string;
   nutrition: {
     type: boolean;
     title: {
@@ -22,7 +28,12 @@ interface ReceiptTypes {
     description: string;
   };
   author: mongoose.Types.ObjectId;
+  ingredients: mongoose.Types.ObjectId;
+  recipeCategory: mongoose.Types.ObjectId;
   review: any;
+  necessaryIngredients: {
+    name: string;
+  };
 }
 interface ReceiptDocument extends ReceiptTypes, Document {}
 
@@ -42,6 +53,7 @@ const receiptSchema = new mongoose.Schema<ReceiptTypes>(
     name: {
       type: String,
       required: [true, "რეცეპტი უნდა შეიცავდეს სახელს"],
+      trim: true,
     },
     slug: String,
     shortDescription: {
@@ -64,9 +76,11 @@ const receiptSchema = new mongoose.Schema<ReceiptTypes>(
       type: Number,
       default: 1,
     },
-    coverImage: {
-      type: String,
-      required: [true, "გთხოვთ, ავირთოთ სურათი"],
+    image: {
+      data: Buffer,
+      contentType: String,
+      name: String,
+      destination: String,
     },
     nutrition: {
       type: [nutritionSchema],
@@ -82,12 +96,28 @@ const receiptSchema = new mongoose.Schema<ReceiptTypes>(
         description: String,
       },
     ],
+    necessaryIngredients: [
+      {
+        name: String,
+      },
+    ],
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: [true, "ავტორის მითითება სავალდებულოა"],
     },
-    // review: { type: mongoose.Schema.Types.ObjectId, ref: "Review" },
+    ingredients: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Ingredient",
+        required: [true, "სავალდებულია სულ მცირე 1 ინგრედეინტის მითითება"],
+      },
+    ],
+    recipeCategory: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ReceiptCategory",
+      required: [true, "კატეგორიის მითითება სავალდებულოა"],
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -104,10 +134,19 @@ receiptSchema.virtual("review", {
 receiptSchema.pre(/^find/, function (next: NextFunction) {
   const query = this as Query<ReceiptDocument[], ReceiptDocument>;
 
-  query.populate({
-    path: "author",
-    select: "firstName avatar",
-  });
+  query
+    .populate({
+      path: "author",
+      select: "firstName avatar",
+    })
+    .populate({
+      path: "ingredients",
+      select: "name",
+    })
+    .populate({
+      path: "recipeCategory",
+      select: "name",
+    });
 
   next();
 });

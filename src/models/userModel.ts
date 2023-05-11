@@ -55,7 +55,7 @@ const userSchema = new mongoose.Schema<UserTypes>({
   },
   avatar: {
     type: String,
-    default: "user/defaultAvatar.png",
+    default: "images/user/defaultAvatar.png",
   },
   role: {
     type: String,
