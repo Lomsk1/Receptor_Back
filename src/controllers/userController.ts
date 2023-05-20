@@ -1,3 +1,4 @@
+import jwt from "jsonwebtoken";
 import multer from "multer";
 import sharp from "sharp";
 import User from "../models/userModel";
@@ -5,6 +6,16 @@ import AppError from "../utils/appErrors";
 import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../utils/catchAsync";
 import { deleteOne, getAll, getOne, updateOne } from "./handlerFactory";
+import dotenv from "dotenv";
+
+import { promisify } from "util";
+import { Model } from "mongoose";
+import { Document } from "mongodb";
+import cloudinary from "../utils/cloudinary";
+import { join } from "path";
+import { promises as fsPromises } from "fs";
+
+dotenv.config();
 
 const multerStorage = multer.memoryStorage();
 
@@ -70,8 +81,33 @@ export const updateMe = catchAsync(
       "avatar"
     ); //if we need to change other fields, just add here
 
-    // Upload image to database
-    if (req.file) filteredBody.avatar = req.file.filename;
+    if (req.file) {
+      const tempDirPath = join(__dirname, "temp");
+      const tempFilePath = join(tempDirPath, req.file.filename);
+      // Create the temp directory if it doesn't exist
+      await fsPromises.mkdir(tempDirPath, { recursive: true });
+
+      // Create a temporary file with the buffer content
+      await fsPromises.writeFile(tempFilePath, req.file.buffer);
+
+      const cloudUpload = await cloudinary.uploader.upload(tempFilePath, {
+        folder: "Receipt/Users",
+        width: 500,
+        height: 500,
+        crop:'fill'
+      });
+      if (req.user.avatar && req.user.avatar.public_id) {
+        await cloudinary.uploader.destroy(req.user.avatar.public_id);
+      }
+
+      filteredBody.avatar = {
+        public_id: cloudUpload.public_id,
+        url: cloudUpload.secure_url,
+      };
+
+      // Remove the temporary file after uploading to Cloudinary
+      await fsPromises.unlink(tempFilePath);
+    }
 
     // 3) Update user document
     const updateUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {

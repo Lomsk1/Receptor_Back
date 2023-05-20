@@ -59,7 +59,8 @@ class Email {
   async sendPasswordReset() {
     await this.send(
       "passwordReset",
-      "your password reset token (valid for only 10 minutes)"
+      // "your password reset token (valid for only 10 minutes)"
+      "პაროლის აღდგენა შეგიძლათ მხოლოდ იმეილის გამოგზავნიდან 10 წუთის განმავლობაში!"
     );
   }
 }

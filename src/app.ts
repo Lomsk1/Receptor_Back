@@ -14,12 +14,24 @@ import reviewRoute from "./routes/reviewRoute";
 import ingredientRoute from "./routes/ingredientRoutes";
 import ingredientCategoryRoute from "./routes/ingrCategoryRoutes";
 import recCategoryRoute from "./routes/recCategoryRoutes";
+import globalErrorHandler from "./controllers/errorController";
+import commentLikeRoute from "./routes/commentLikeRoute";
 
 dotenv.config();
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    credentials: true,
+    origin: [
+      "http://localhost:3001",
+      "http://localhost:3000",
+      "http://127.0.0.1:3001",
+      "http://127.0.0.1:3000",
+    ],
+  })
+);
 app.options("*", cors());
 
 if (process.env.NODE_ENV === "development") {
@@ -44,6 +56,7 @@ app.use(mongoSanitize());
 app.use("/api/v1/recipe", receiptRoute);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/comment", commentRoute);
+app.use("/api/v1/commentLike", commentLikeRoute);
 app.use("/api/v1/review", reviewRoute);
 app.use("/api/v1/ingredient", ingredientRoute);
 app.use("/api/v1/ingredientCategory", ingredientCategoryRoute);
@@ -51,6 +64,8 @@ app.use("/api/v1/recipeCategory", recCategoryRoute);
 
 app.use(xss());
 
-// app.use(compression());
+app.use(compression());
+
+app.use(globalErrorHandler);
 
 export default app;

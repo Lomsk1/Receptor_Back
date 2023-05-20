@@ -37,9 +37,11 @@ const createSendToken = (
       Date.now() +
         parseInt(process.env.JWT_COOKIE_EXPIRES_IN) * 24 * 60 * 60 * 1000
     ),
-    httpOnly: true,
-    secure: req.secure || req.headers["x-forwarded-proto"] === "https",
+    // httpOnly: true,
+    sameSite: "none",
+    secure: false,
   });
+  // secure: req.secure || req.headers["x-forwarded-proto"] === "https",
 
   //   Remove password from output
   user.password = undefined;
@@ -135,7 +137,7 @@ export const protect = catchAsync(
   }
 );
 
-export const restrictTo = (...roles:any[]) => {
+export const restrictTo = (...roles: any[]) => {
   return (req: Request, _res: Response, next: NextFunction) => {
     if (!roles.includes(req.user.role)) {
       return next(
@@ -160,9 +162,11 @@ export const forgetPassword = catchAsync(
 
     // 3) Send it to user's email
     try {
-      const resetURL = `${req.protocol}://${req.get(
-        "host"
-      )}/api/v1/users/resetPassword/${resetToken}`;
+      // const resetURL = `${req.protocol}://${req.get(
+      //   "host"
+      // )}/api/v1/users/resetPassword/${resetToken}`;
+
+      const resetURL = `${process.env.FRONT_BASE_URL}/auth/password-forgot/${resetToken}`;
 
       await new Email(user, resetURL).sendPasswordReset();
 

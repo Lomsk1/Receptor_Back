@@ -11,18 +11,19 @@ import {
 import { Request } from "express";
 import AppError from "../utils/appErrors";
 
-const multerStorage = multer.diskStorage({
-  destination: function (
-    _req: Request,
-    _file: Express.Multer.File,
-    cb: Function
-  ) {
-    cb(null, "src/images/recipe");
-  },
-  filename: function (_req: Request, file: Express.Multer.File, cb: Function) {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
+// const multerStorage = multer.memoryStorage({
+//   destination: function (
+//     _req: Request,
+//     _file: Express.Multer.File,
+//     cb: Function
+//   ) {
+//     cb(null, "src/images/recipe");
+//   },
+//   filename: function (_req: Request, file: Express.Multer.File, cb: Function) {
+//     cb(null, Date.now() + "-" + file.originalname);
+//   },
+// });
+const multerStorage = multer.memoryStorage();
 
 const multerFilter = (
   _req: Request,
@@ -37,11 +38,19 @@ const multerFilter = (
 };
 
 const upload = multer({
+  dest: "src/images/recipe",
   storage: multerStorage,
   fileFilter: multerFilter,
 });
 
-export const uploadRecipePhoto = upload.single("coverImage");
+export const uploadRecipePhoto = upload.single("image");
+
+// const upload = multer({
+//   storage: multerStorage,
+//   fileFilter: multerFilter,
+// });
+
+// export const uploadRecipePhoto = upload.single("image");
 
 export const getReceiptFiltered = getAllByFilter(Receipt);
 export const getAllReceipt = getAll(Receipt);

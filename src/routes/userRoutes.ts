@@ -22,10 +22,6 @@ import {
 
 const userRouter = express.Router();
 
-
-userRouter.route("/").get(getAllUsers);
-
-
 userRouter.post("/signup", signUp);
 userRouter.post("/login", login);
 
@@ -42,7 +38,7 @@ userRouter.delete("/deleteMe", deleteMe);
 
 userRouter.use(restrictTo("admin"));
 
-// userRouter.route("/").get(getAllUsers);
+userRouter.route("/").get(getAllUsers);
 userRouter.route("/:id").get(getUser).patch(updateUser).delete(deleteUser);
 
 export default userRouter;

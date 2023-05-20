@@ -7,7 +7,14 @@ interface UserTypes {
   firstName: string;
   lastName: string;
   email: string;
-  avatar: string;
+  avatar: {
+    data: Buffer;
+    contentType: string;
+    name: string;
+    destination: string;
+    public_id: string;
+    url: string;
+  };
   role: string;
   password: string;
   passwordConfirm: string;
@@ -54,8 +61,16 @@ const userSchema = new mongoose.Schema<UserTypes>({
     validate: [validator.isEmail, "გთხოვთ მიუთითოთ ვალიდური იმეილი"],
   },
   avatar: {
-    type: String,
-    default: "images/user/defaultAvatar.png",
+    data: Buffer,
+    contentType: String,
+    name: String,
+    destination: String,
+    public_id: {
+      type: String,
+    },
+    url: {
+      type: String,
+    },
   },
   role: {
     type: String,
@@ -139,8 +154,6 @@ userSchema.methods.createPasswordResetToken = function () {
     .createHash("sha256")
     .update(resetToken)
     .digest("hex");
-
-  console.log({ resetToken }, this.passwordResetToken);
 
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
 

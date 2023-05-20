@@ -13,6 +13,8 @@ interface ReceiptTypes {
     contentType: string;
     name: string;
     destination: string;
+    public_id: string;
+    url: string;
   };
   category: string;
   nutrition: {
@@ -81,6 +83,12 @@ const receiptSchema = new mongoose.Schema<ReceiptTypes>(
       contentType: String,
       name: String,
       destination: String,
+      public_id: {
+        type: String,
+      },
+      url: {
+        type: String,
+      },
     },
     nutrition: {
       type: [nutritionSchema],

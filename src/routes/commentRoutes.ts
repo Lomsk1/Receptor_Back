@@ -5,6 +5,7 @@ import {
   deleteComment,
   getAllComments,
   getComment,
+  getCommentByRecipeId,
   updateComment,
 } from "../controllers/commentController";
 
@@ -19,5 +20,7 @@ commentRoute
   .get(getComment)
   .patch(protect, updateComment)
   .delete(protect, deleteComment);
+
+commentRoute.route("/byRecipe/:id").get(getCommentByRecipeId());
 
 export default commentRoute;
