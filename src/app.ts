@@ -16,6 +16,7 @@ import ingredientCategoryRoute from "./routes/ingrCategoryRoutes";
 import recCategoryRoute from "./routes/recCategoryRoutes";
 import globalErrorHandler from "./controllers/errorController";
 import commentLikeRoute from "./routes/commentLikeRoute";
+import recipeFavoriteRoute from "./routes/recipeFavRoute";
 
 dotenv.config();
 
@@ -61,11 +62,12 @@ app.use("/api/v1/review", reviewRoute);
 app.use("/api/v1/ingredient", ingredientRoute);
 app.use("/api/v1/ingredientCategory", ingredientCategoryRoute);
 app.use("/api/v1/recipeCategory", recCategoryRoute);
+app.use("/api/v1/recipeFavorite", recipeFavoriteRoute);
 
 app.use(xss());
 
 app.use(compression());
 
-app.use(globalErrorHandler);
+// app.use(globalErrorHandler);
 
 export default app;

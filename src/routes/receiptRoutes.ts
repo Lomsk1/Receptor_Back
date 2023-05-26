@@ -9,10 +9,11 @@ import {
   uploadRecipePhoto,
 } from "../controllers/receiptController";
 import { protect } from "../controllers/authController";
+import reviewRoute from "./reviewRoute";
 
-const receiptRoute = express.Router({
-  mergeParams: true,
-});
+const receiptRoute = express.Router();
+
+receiptRoute.use("/:tourId/reviews", reviewRoute);
 
 receiptRoute
   .route("/")

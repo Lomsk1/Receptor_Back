@@ -67,17 +67,18 @@ reviewSchema.statics.calcAverageRating = async function (receiptId) {
 };
 
 reviewSchema.post("save", async function () {
-  //   this.calcAverageRating(this.receipt);
-  //   this.constructor.calcAverageRating(this.receipt);
   (this.constructor as ReviewModel).calcAverageRating(this.receipt);
 });
 
-reviewSchema.pre(/^findOneAnd/, async function (this: any, next: NextFunction) {
-  this.r = await this.findOne();
-  next();
-});
+reviewSchema.pre(
+  /^findOneAnd/,
+  async function (this: ReviewModel, next: NextFunction) {
+    this.r = await this.findOne();
+    next();
+  }
+);
 
-reviewSchema.post(/^findOneAnd/, async function (this: any) {
+reviewSchema.post(/^findOneAnd/, async function (this: ReviewModel) {
   await this.r.constructor.calcAverageRating(this.r.receipt);
 });
 

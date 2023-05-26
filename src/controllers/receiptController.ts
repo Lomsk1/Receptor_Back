@@ -11,7 +11,7 @@ import {
 import { Request } from "express";
 import AppError from "../utils/appErrors";
 
-// const multerStorage = multer.memoryStorage({
+// const multerStorage = multer.distStorage({
 //   destination: function (
 //     _req: Request,
 //     _file: Express.Multer.File,

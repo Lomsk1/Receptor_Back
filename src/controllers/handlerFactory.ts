@@ -41,6 +41,28 @@ export const deleteCommentLikeByUser = (Model: Model<Document>) =>
     });
   });
 
+export const deleteRecipeFavoriteByUser = (Model: Model<Document>) =>
+  catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { userID, recipeID } = req.params;
+
+    const data = await Model.findOneAndDelete(
+      {
+        user: userID,
+        recipe: recipeID,
+      },
+      { new: false }
+    );
+    if (!data) {
+      return next(new AppError("No document found with that ID", 404));
+    }
+    res.status(200).json({
+      status: "success",
+      data: null,
+    });
+  });
+
+// Default
+
 export const getAll = (Model: Model<Document>) =>
   catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     let filter = {};
@@ -110,18 +132,6 @@ export const createOne = (Model: Model<Document>) =>
       // Remove the temporary file after uploading to Cloudinary
       await fsPromises.unlink(tempFilePath);
     }
-    // if (req.file) {
-    //   createdData = {
-    //     ...createdData,
-    //     image: {
-    //       data: req.file.filename,
-    //       contentType: req.file.mimetype,
-    //       name: req.file.filename,
-    //       destination: req.file.destination.split("/").slice(1).join("/"),
-    //     },
-    //   };
-    // }
-
     const data = await Model.create(createdData);
 
     res.status(201).json({

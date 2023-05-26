@@ -2,6 +2,7 @@ import mongoose, { Document, Query, Model } from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import { NextFunction } from "express";
 
 interface UserTypes {
   firstName: string;
@@ -44,63 +45,86 @@ export interface UserDoc extends Document {
   createPasswordResetToken(): Promise<boolean>;
 }
 
-const userSchema = new mongoose.Schema<UserTypes>({
-  firstName: {
-    type: String,
-    required: [true, "გთხოვთ შეიყვანოთ სახელი"],
-  },
-  lastName: {
-    type: String,
-    required: [true, "გთხოვთ შეიყვანოთ გვარი"],
-  },
-  email: {
-    type: String,
-    required: [true, "გთხოვთ, შეიყვანოთ თქვენი იმეილი"],
-    unique: true,
-    lowercase: true,
-    validate: [validator.isEmail, "გთხოვთ მიუთითოთ ვალიდური იმეილი"],
-  },
-  avatar: {
-    data: Buffer,
-    contentType: String,
-    name: String,
-    destination: String,
-    public_id: {
+const userSchema = new mongoose.Schema<UserTypes>(
+  {
+    firstName: {
       type: String,
+      required: [true, "გთხოვთ შეიყვანოთ სახელი"],
     },
-    url: {
+    lastName: {
       type: String,
+      required: [true, "გთხოვთ შეიყვანოთ გვარი"],
     },
-  },
-  role: {
-    type: String,
-    enum: ["user", "editor", "admin"],
-    default: "user",
-  },
-  password: {
-    type: String,
-    required: [true, "გთხოვთ შეიყვანეთ პაროლი"],
-    minlength: 8,
-    select: false,
-  },
-  passwordConfirm: {
-    type: String,
-    required: [true, "გთხოვთ დაადასტურეთ პაროლი"],
-    validate: {
-      validator: function (el) {
-        return el === this.password;
+    email: {
+      type: String,
+      required: [true, "გთხოვთ, შეიყვანოთ თქვენი იმეილი"],
+      unique: true,
+      lowercase: true,
+      validate: [validator.isEmail, "გთხოვთ მიუთითოთ ვალიდური იმეილი"],
+    },
+    avatar: {
+      data: Buffer,
+      contentType: String,
+      name: String,
+      destination: String,
+      public_id: {
+        type: String,
       },
-      message: "პაროლები არ ემთხვევა ერთმანეთს",
+      url: {
+        type: String,
+      },
+    },
+    role: {
+      type: String,
+      enum: ["user", "editor", "admin"],
+      default: "user",
+    },
+    password: {
+      type: String,
+      required: [true, "გთხოვთ შეიყვანეთ პაროლი"],
+      minlength: 8,
+      select: false,
+    },
+    passwordConfirm: {
+      type: String,
+      required: [true, "გთხოვთ დაადასტურეთ პაროლი"],
+      validate: {
+        validator: function (el) {
+          return el === this.password;
+        },
+        message: "პაროლები არ ემთხვევა ერთმანეთს",
+      },
+    },
+    passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetExpires: Date,
+    active: {
+      type: Boolean,
+      default: true,
+      select: false,
     },
   },
-  passwordChangedAt: Date,
-  passwordResetToken: String,
-  passwordResetExpires: Date,
-  active: {
-    type: Boolean,
-    default: true,
-    select: false,
-  },
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
+);
+
+userSchema.virtual("favorites", {
+  ref: "RecipeFavorite",
+  foreignField: "user",
+  localField: "_id",
+});
+
+userSchema.pre(/^find/, function (next: NextFunction) {
+  const query = this as Query<UserModel[], UserModel>;
+
+  query.populate({
+    path: "favorites",
+    select: "_id -user recipe",
+  });
+
+  next();
 });
 
 userSchema.pre("save", async function (next) {

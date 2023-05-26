@@ -5,6 +5,7 @@ import {
   deleteReview,
   getAllReview,
   getReview,
+  setRecipeUserIds,
   updateReview,
 } from "../controllers/reviewController";
 
@@ -12,7 +13,7 @@ const reviewRoute = express.Router({
   mergeParams: true,
 });
 
-reviewRoute.route("/").get(getAllReview).post(protect, createReview);
+reviewRoute.route("/").get(getAllReview).post(protect,setRecipeUserIds, createReview);
 
 reviewRoute
   .route("/:id")
