@@ -5,6 +5,8 @@ import {
   getAllReceipt,
   getReceiptById,
   getReceiptFiltered,
+  getRecipeStats,
+  getRecipeStatsAnnually,
   updateReceipt,
   uploadRecipePhoto,
 } from "../controllers/receiptController";
@@ -14,6 +16,8 @@ import reviewRoute from "./reviewRoute";
 const receiptRoute = express.Router();
 
 receiptRoute.use("/:tourId/reviews", reviewRoute);
+receiptRoute.route("/recipe-stats").get(getRecipeStats);
+receiptRoute.route("/recipe-stats/:year").get(getRecipeStatsAnnually);
 
 receiptRoute
   .route("/")

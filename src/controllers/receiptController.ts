@@ -8,21 +8,10 @@ import {
   getOne,
   updateOne,
 } from "./handlerFactory";
-import { Request } from "express";
+import { NextFunction, Request, Response } from "express";
 import AppError from "../utils/appErrors";
+import { catchAsync } from "../utils/catchAsync";
 
-// const multerStorage = multer.distStorage({
-//   destination: function (
-//     _req: Request,
-//     _file: Express.Multer.File,
-//     cb: Function
-//   ) {
-//     cb(null, "src/images/recipe");
-//   },
-//   filename: function (_req: Request, file: Express.Multer.File, cb: Function) {
-//     cb(null, Date.now() + "-" + file.originalname);
-//   },
-// });
 const multerStorage = multer.memoryStorage();
 
 const multerFilter = (
@@ -45,17 +34,96 @@ const upload = multer({
 
 export const uploadRecipePhoto = upload.single("image");
 
-// const upload = multer({
-//   storage: multerStorage,
-//   fileFilter: multerFilter,
-// });
-
-// export const uploadRecipePhoto = upload.single("image");
-
 export const getReceiptFiltered = getAllByFilter(Receipt);
 export const getAllReceipt = getAll(Receipt);
 export const getReceiptById = getOne(Receipt);
-// export const getReceiptById = getOne(Receipt, { path: "user" });
 export const createReceipt = createOne(Receipt);
 export const updateReceipt = updateOne(Receipt);
 export const deleteReceipt = deleteOne(Receipt);
+
+export const getRecipeStats = catchAsync(
+  async (_req: Request, res: Response, _next: NextFunction) => {
+    const stats = await Receipt.aggregate([
+      {
+        $match: { ratingsAverage: { $gte: 1 } },
+      },
+      {
+        $group: {
+          _id: { $toUpper: "$difficulty" },
+          numRecipes: { $sum: 1 },
+          numRatings: { $sum: "$ratingsQuantity" },
+          avgRating: { $avg: "$ratingsAverage" },
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      status: "success",
+      stats,
+    });
+  }
+);
+
+export const getRecipeStatsAnnually = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const year = Number(req.params.year);
+
+    const stats = await Receipt.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { month: { $month: "$createdAt" } },
+          numRecipes: { $sum: 1 },
+          numRatings: { $sum: "$ratingsQuantity" },
+        },
+      },
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          month: {
+            $let: {
+              vars: {
+                monthsInString: [
+                  "",
+                  "January",
+                  "February",
+                  "March",
+                  "April",
+                  "May",
+                  "June",
+                  "July",
+                  "August",
+                  "September",
+                  "October",
+                  "November",
+                  "December",
+                ],
+              },
+              in: {
+                $arrayElemAt: ["$$monthsInString", "$_id.month"],
+              },
+            },
+          },
+          numRecipes: 1,
+          numRatings: 1,
+        },
+      },
+    ]);
+    res.status(200).json({
+      status: "success",
+      stats,
+    });
+  }
+);
