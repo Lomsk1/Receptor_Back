@@ -1,5 +1,6 @@
 import { NextFunction } from "express";
 import mongoose, { Document, Query } from "mongoose";
+import slugify from "slugify";
 
 interface ReceiptTypes {
   name: string;
@@ -176,11 +177,15 @@ receiptSchema.pre(/^find/, function (next: NextFunction) {
   next();
 });
 
-// receiptSchema.pre("save", async function (next) {
-//   const user = await mongoose.model("User").findById(this.user);
-//   this.author = user.firsName;
-//   next();
-// });
+function generateSlug(name: string) {
+  // Custom logic to generate slugs without converting names to English
+  const slug = name.toLowerCase().replace(/\s+/g, "-");
+  return slug;
+}
+receiptSchema.pre("save", function (next) {
+  this.slug = generateSlug(this.name);
+  next();
+});
 
 const Receipt = mongoose.model<ReceiptTypes & Document>(
   "Receipt",

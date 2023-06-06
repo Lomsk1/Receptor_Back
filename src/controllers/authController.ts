@@ -28,7 +28,7 @@ const createSendToken = (
   user: any,
   statusCode: number,
   res: Response,
-  req: Request
+  _req: Request
 ) => {
   const token = signToken(user.id);
 

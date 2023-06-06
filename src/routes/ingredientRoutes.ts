@@ -5,12 +5,15 @@ import {
   deleteIngredient,
   getAllIngredients,
   getIngredient,
+  getIngredientByName,
   updateIngredient,
 } from "../controllers/ingredeintController";
 
 const ingredientRoute = express.Router({
   mergeParams: true,
 });
+
+ingredientRoute.route("/search/:name").get(getIngredientByName());
 
 ingredientRoute
   .route("/")

@@ -127,3 +127,21 @@ export const getRecipeStatsAnnually = catchAsync(
     });
   }
 );
+
+export const getRecipeBySlug = () =>
+  catchAsync(async (req: Request, res: Response, _next: NextFunction) => {
+    const { slug } = req.params;
+
+    const slugs = slug.split(" ").filter(Boolean); // Split the slug into individual slugs
+
+    const regexConditions = slugs.map((s) => new RegExp(s, "i")); // Create regex patterns for each slug
+    const query = { slug: { $in: regexConditions } };
+
+    const data = await Receipt.find(query);
+
+    res.status(200).json({
+      status: "success",
+      result: data.length,
+      data,
+    });
+  });

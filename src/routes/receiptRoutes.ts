@@ -5,6 +5,7 @@ import {
   getAllReceipt,
   getReceiptById,
   getReceiptFiltered,
+  getRecipeBySlug,
   getRecipeStats,
   getRecipeStatsAnnually,
   updateReceipt,
@@ -23,7 +24,10 @@ receiptRoute
   .route("/")
   .get(getAllReceipt)
   .post(protect, uploadRecipePhoto, createReceipt);
+
 receiptRoute.route("/filter").post(getReceiptFiltered);
+receiptRoute.route("/slug/:slug").get(getRecipeBySlug());
+
 receiptRoute
   .route("/:id")
   .get(getReceiptById)
