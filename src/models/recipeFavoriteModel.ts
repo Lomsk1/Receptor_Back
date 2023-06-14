@@ -32,25 +32,6 @@ const RecipeFavoriteSchema = new mongoose.Schema<RecipeFavoriteTypes>({
 
 RecipeFavoriteSchema.index({ recipe: 1, user: 1 });
 
-// RecipeFavoriteSchema.pre(/^find/, function (next) {
-//   const query = this as Query<RecipeFavoriteDocument[], RecipeFavoriteDocument>;
-//   query.populate({
-//     path: "recipe",
-//     select: {
-//       _id: 1,
-//       name: 1,
-//       difficulty: 1,
-//       cookingTime: 1,
-//       image: 1,
-//       author: 0,
-//       ingredients: 0,
-//       recipeCategory: 0,
-//       review: 0,
-//     },
-//   });
-//   next();
-// });
-
 RecipeFavoriteSchema.methods.recipePopulate = async function () {
   const query = this as Query<RecipeFavoriteDocument[], RecipeFavoriteDocument>;
   await query.populate({

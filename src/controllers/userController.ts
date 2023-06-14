@@ -1,4 +1,3 @@
-import jwt from "jsonwebtoken";
 import multer from "multer";
 import sharp from "sharp";
 import User from "../models/userModel";
@@ -7,10 +6,6 @@ import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../utils/catchAsync";
 import { deleteOne, getAll, getOne, updateOne } from "./handlerFactory";
 import dotenv from "dotenv";
-
-import { promisify } from "util";
-import { Model } from "mongoose";
-import { Document } from "mongodb";
 import cloudinary from "../utils/cloudinary";
 import { join } from "path";
 import { promises as fsPromises } from "fs";
@@ -94,7 +89,7 @@ export const updateMe = catchAsync(
         folder: "Receipt/Users",
         width: 500,
         height: 500,
-        crop:'fill'
+        crop: "fill",
       });
       if (req.user.avatar && req.user.avatar.public_id) {
         await cloudinary.uploader.destroy(req.user.avatar.public_id);

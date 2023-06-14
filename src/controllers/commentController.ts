@@ -10,16 +10,6 @@ import {
 } from "./handlerFactory";
 import AppError from "../utils/appErrors";
 
-// export const setCommentUserIds = (req, res, next) => {
-//     // Allow nested routes
-//     if (!req.body.recipe) req.body.recipe = req.params.recipeId;
-//     if (!req.body.user) req.body.user = req.user.id;
-
-//     next();
-
-//     //< If we need to add this extra information, we add this as the third parameter in our routes >
-//   };
-
 export const getCommentByRecipeId = () =>
   catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const data = await Comment.find({ receipt: req.params.id });

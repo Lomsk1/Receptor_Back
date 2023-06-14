@@ -1,5 +1,4 @@
-import { NextFunction } from "express";
-import mongoose, { Query, Document } from "mongoose";
+import mongoose, {  Document } from "mongoose";
 
 interface CommentLikeTypes {
   user: mongoose.Types.ObjectId;

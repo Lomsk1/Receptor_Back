@@ -30,6 +30,7 @@ app.use(
       "http://localhost:3000",
       "http://127.0.0.1:3001",
       "http://127.0.0.1:3000",
+      "https://recipes-front-nine.vercel.app",
     ],
   })
 );
@@ -44,14 +45,14 @@ app.use(express.json());
 
 app.use(mongoSanitize());
 
-// app.use(helmet());
+app.use(helmet());
 
-// app.use(
-//   helmet({
-//     crossOriginResourcePolicy: false,
-//   })
-// );
-// app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+  })
+);
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
 // Routes
 app.use("/api/v1/recipe", receiptRoute);
@@ -68,6 +69,6 @@ app.use(xss());
 
 app.use(compression());
 
-// app.use(globalErrorHandler);
+app.use(globalErrorHandler);
 
 export default app;

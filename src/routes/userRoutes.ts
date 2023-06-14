@@ -2,6 +2,7 @@ import express from "express";
 import {
   forgetPassword,
   login,
+  logout,
   protect,
   resetPassword,
   restrictTo,
@@ -31,6 +32,8 @@ userRouter.patch("/resetPassword/:token", resetPassword);
 userRouter.use(protect); //After this, everything needs to be authorized
 
 userRouter.patch("/updateMyPassword", updatePassword);
+
+userRouter.post("/logout", logout);
 
 userRouter.get("/me", getMe, getUser);
 userRouter.patch("/updateMe", uploadUserPhoto, resizeUserPhoto, updateMe);

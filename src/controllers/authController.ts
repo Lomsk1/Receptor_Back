@@ -222,9 +222,12 @@ export const updatePassword = catchAsync(
     const user = await User.findById(req.user.id).select("+password");
 
     // 2) check if POSTed current password is correct
-    if (!user.correctPassword(req.body.passwordCurrent, user.password)) {
+    if (
+      !(await user.correctPassword(req.body.passwordCurrent, user.password))
+    ) {
       return next(new AppError("ახლანდელი პაროლი არასწორია", 401));
     }
+    // console.log(req.body.passwordCurrent, user.password)
 
     // 3) If so, update password
     user.password = req.body.password;
@@ -235,3 +238,14 @@ export const updatePassword = catchAsync(
     createSendToken(user, 200, res, req);
   }
 );
+
+export const logout = (_req: Request, res: Response) => {
+  // Clear the JWT cookie by setting it to an expired value
+  res.cookie("jwt", "expired", {
+    expires: new Date(Date.now() - 1),
+    httpOnly: true,
+  });
+
+  // Optionally, you can redirect the user to a specific page or send a JSON response
+  res.status(200).json({ status: "success" });
+};

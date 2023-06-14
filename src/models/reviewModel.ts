@@ -1,5 +1,5 @@
 import { NextFunction } from "express";
-import mongoose, { Query, Document, Model } from "mongoose";
+import mongoose, { Document, Model } from "mongoose";
 import Receipt from "./receiptModel";
 
 interface ReviewTypes {
@@ -81,17 +81,6 @@ reviewSchema.pre(
 reviewSchema.post(/^findOneAnd/, async function (this: ReviewModel) {
   await this.r.constructor.calcAverageRating(this.r.receipt);
 });
-
-// reviewSchema.pre(/^find/, function (next: NextFunction) {
-//   const query = this as Query<ReviewDocument[], ReviewDocument>;
-
-//   query.populate({
-//     path: "user",
-//     select: "firstName avatar",
-//   });
-
-//   next();
-// });
 
 const Review = mongoose.model<ReviewTypes & ReviewModel & Document>(
   "Review",

@@ -1,6 +1,5 @@
 import { NextFunction } from "express";
 import mongoose, { Document, Query } from "mongoose";
-import slugify from "slugify";
 
 interface ReceiptTypes {
   name: string;
@@ -45,11 +44,10 @@ interface ReceiptDocument extends ReceiptTypes, Document {}
 const nutritionSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, "Nutrition title name is required"],
   },
   weight: {
     type: Number,
-    required: [true, "Nutrition title weight is required"],
+    default: 1,
   },
 });
 

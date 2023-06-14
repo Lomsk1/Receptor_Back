@@ -65,7 +65,7 @@ export const getRecipeStats = catchAsync(
 );
 
 export const getRecipeStatsAnnually = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const year = Number(req.params.year);
 
     const stats = await Receipt.aggregate([

@@ -1,4 +1,3 @@
-import { NextFunction, Request, Response } from "express";
 import CommentLike from "../models/commentLikeModel";
 import {
   createOne,

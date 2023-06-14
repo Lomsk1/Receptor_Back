@@ -89,7 +89,7 @@ const userSchema = new mongoose.Schema<UserTypes>(
       type: String,
       required: [true, "გთხოვთ დაადასტურეთ პაროლი"],
       validate: {
-        validator: function (el) {
+        validator: function (el: string) {
           return el === this.password;
         },
         message: "პაროლები არ ემთხვევა ერთმანეთს",

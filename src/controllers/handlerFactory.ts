@@ -142,7 +142,34 @@ export const createOne = (Model: Model<Document>) =>
 
 export const updateOne = (Model: Model<Document>) =>
   catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    let updatedData = req.body;
+    const { body, file } = req;
+    let updatedData = { ...body };
+    const findModel = await Model.findById(req.params.id);
+    console.log(findModel.image);
+    if (req.file) {
+      const tempDirPath = join(__dirname, "tempRep");
+      const tempFilePath = join(tempDirPath, file.originalname);
+      // Create the temp directory if it doesn't exist
+      await fsPromises.mkdir(tempDirPath, { recursive: true });
+
+      // Create a temporary file with the buffer content
+      await fsPromises.writeFile(tempFilePath, file.buffer);
+
+      const cloudUpload = await cloudinary.uploader.upload(tempFilePath, {
+        folder: `Receipt/Recipe`,
+      });
+
+      if (findModel.image && findModel.image.public_id) {
+        await cloudinary.uploader.destroy(findModel.image.public_id);
+      }
+      updatedData.image = {
+        public_id: cloudUpload.public_id,
+        url: cloudUpload.secure_url,
+      };
+
+      // Remove the temporary file after uploading to Cloudinary
+      await fsPromises.unlink(tempFilePath);
+    }
 
     const data = await Model.findByIdAndUpdate(req.params.id, updatedData, {
       new: true,
@@ -152,6 +179,7 @@ export const updateOne = (Model: Model<Document>) =>
     if (!data) {
       return next(new AppError("No document found with that ID", 404));
     }
+
     res.status(200).json({
       status: "success",
       data,
