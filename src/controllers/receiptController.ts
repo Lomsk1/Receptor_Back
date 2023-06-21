@@ -57,8 +57,11 @@ export const getRecipeStats = catchAsync(
       },
     ]);
 
+    const totalRecipe = await Receipt.find();
+
     res.status(200).json({
       status: "success",
+      total: totalRecipe.length,
       stats,
     });
   }
