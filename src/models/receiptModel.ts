@@ -157,7 +157,7 @@ receiptSchema.pre(/^find/, function (next: NextFunction) {
   query
     .populate({
       path: "author",
-      select: "firstName avatar",
+      select: "firstName avatar lastName",
     })
     .populate({
       path: "ingredients",
