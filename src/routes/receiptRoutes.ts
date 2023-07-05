@@ -11,7 +11,7 @@ import {
   updateReceipt,
   uploadRecipePhoto,
 } from "../controllers/receiptController";
-import { protect } from "../controllers/authController";
+import { protect, restrictTo } from "../controllers/authController";
 import reviewRoute from "./reviewRoute";
 
 const receiptRoute = express.Router();
@@ -33,5 +33,9 @@ receiptRoute
   .get(getReceiptById)
   .patch(protect, uploadRecipePhoto, updateReceipt)
   .delete(protect, deleteReceipt);
+
+receiptRoute
+  .route("/byAdmin/:id")
+  .delete(protect, deleteReceipt, restrictTo("admin", "editor"));
 
 export default receiptRoute;
