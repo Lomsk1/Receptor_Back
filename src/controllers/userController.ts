@@ -142,3 +142,24 @@ export const getUser = getOne(User);
 export const updateUser = updateOne(User);
 
 export const deleteUser = deleteOne(User);
+
+export const getUserByEmail = () =>
+  catchAsync(async (req: Request, res: Response, _next: NextFunction) => {
+    const searchedEmail = req.body.email;
+
+    const searchDivided = searchedEmail.split(" ").filter(Boolean); // Split the searchedEmail into individual slugs
+
+    const regexConditions = searchDivided.map((s: any) => new RegExp(s, "i"));
+
+    const query = { email: { $in: regexConditions } };
+
+    const data = await User.find(query);
+
+    console.log(query);
+
+    res.status(200).json({
+      status: "success",
+      result: data.length,
+      data,
+    });
+  });

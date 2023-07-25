@@ -15,6 +15,7 @@ import {
   getAllUsers,
   getMe,
   getUser,
+  getUserByEmail,
   resizeUserPhoto,
   updateMe,
   updateUser,
@@ -40,6 +41,7 @@ userRouter.patch("/updateMe", uploadUserPhoto, resizeUserPhoto, updateMe);
 userRouter.delete("/deleteMe", deleteMe);
 
 userRouter.use(restrictTo("admin"));
+userRouter.route("/searchByEmail").get(getUserByEmail());
 
 userRouter.route("/").get(getAllUsers);
 userRouter.route("/:id").get(getUser).patch(updateUser).delete(deleteUser);
