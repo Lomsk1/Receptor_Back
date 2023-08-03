@@ -54,7 +54,7 @@ app.use(
 );
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
-// Routes
+/* Routes */
 app.use("/api/v1/recipe", receiptRoute);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/comment", commentRoute);
